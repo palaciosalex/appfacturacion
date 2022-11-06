@@ -40,7 +40,7 @@ function LeerXML() {
     $detraccion = "";
 	$importeFinal = ($importe);
 	echo "<div style='text-align:center;'>";
-	echo "<h1>DATOS FACTURA</h1>";
+	echo "<h1>DATOS DE FACTURA</h1>";
 	echo "</div>";
 	echo "<table class='table table-striped table-dark' >";
 	echo "<tr><td>ID </td><td>".$ID."</td></tr>";
