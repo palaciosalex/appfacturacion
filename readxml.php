@@ -55,12 +55,13 @@ function LeerXML() {
 	$pedido = $docXML->xpath('//cbc:ID')[2]; 
     $fechaFacturacion = $docXML->xpath('//cbc:IssueDate')[0];
     $referencia = $docXML->xpath('//cbc:ID')[0];
+	$valor_venta = $docXML->xpath('//cbc:LineExtensionAmount')[0];
+	$IGV = $docXML->xpath('//cbc:TaxAmount')[0];
     $precio_venta = $docXML->xpath('//cbc:PayableAmount')[0];
-    $IGV = $docXML->xpath('//cbc:TaxAmount')[0];
-	$valor_venta = ($precio_venta / 1.18);
     $texto = $docXML->xpath('//cbc:Description')[0];
-    $retencion = "";
-    $detraccion = "";
+    $motivo_retencion =  "";
+	$monto_retenido = 0;
+    $detraccion = 0.00;
 	$importeFinal = ($valor_venta);
 	echo "<div style='text-align:center;'>";
 	echo "<h1>DATOS FACTURA</h1>";
@@ -82,12 +83,25 @@ function LeerXML() {
 	$archivotxt = file_get_contents('AgenRet_TXT.txt');
 	$pos = strpos($archivotxt, $Ruc);
 	// Nótese el uso de ===. Puesto que == simple no funcionará como se espera
-	if ($pos === false) {
-		echo "<tr><td>Retencion </td><td>La empresa con ruc  '$Ruc' NO ESTÁ en el padron de agentes de retencion</td></tr>";
-	} else {
-		echo "<tr><td>Retencion </td><td>La empresa con ruc  '$Ruc' SI ESTÁ en el padron de agentes de retencion</td></tr>";
+
+	if($IGV==0){
+		$motivo_retencion = "SIN IGV";
+	}else{
+		
+		if ($pos === false) {
+			$motivo_retencion = "NO ES AGENTE DE RETENCION";
+		} else {
+			$motivo_retencion = "ES AGENTE DE RETENCION";
+			if(isset($docXML->xpath('//cac:AllowanceCharge/cbc:Amount')[0])){
+				$monto_retenido = $docXML->xpath('//cac:AllowanceCharge/cbc:Amount')[0];
+			}
+			
+		}
 	}
 
+	
+	echo "<tr><td>Retencion </td><td>".$motivo_retencion."</td></tr>";
+	echo "<tr><td>Monto Retenido (3%) </td><td>".$monto_retenido."</td></tr>";
 	echo "<tr><td>Detraccion </td><td>".$detraccion."</td></tr>";
 	echo "</table>";
 
