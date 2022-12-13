@@ -48,10 +48,10 @@ function LeerXML() {
 	$ID = $docXML->xpath('//cbc:ID')[0];
 	$Fecha = $docXML->xpath('//cbc:IssueDate')[0];
 	//$Ruc = $docXML->xpath('//cbc:ID')[6];
-	$Ruc = $docXML->xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID')[0];
+	$Ruc = "";
 	
 	//$Cliente = $docXML->xpath('//cbc:RegistrationName')[0];
-	$Cliente = $docXML->xpath('//cbc:RegistrationName')[1];
+	$Emisor = "";
 	$pedido = $docXML->xpath('//cbc:ID')[2]; 
     $fechaFacturacion = $docXML->xpath('//cbc:IssueDate')[0];
     $referencia = $docXML->xpath('//cbc:ID')[0];
@@ -63,14 +63,37 @@ function LeerXML() {
 	$monto_retenido = 0;
     $detraccion = 0.00;
 	$importeFinal = ($valor_venta);
+	$codigoReciboH= $docXML->xpath('//cac:TaxCategory/cbc:ID')[0];
+	$tipo_comprobante = "";
+
+
+	if($codigoReciboH=="A"){
+		$tipo_comprobante = "RECIBO POR HONORARIOS";
+		$Ruc = $docXML->xpath('//cbc:CustomerAssignedAccountID')[0];
+		$Emisor = $docXML->xpath('//cac:AccountingSupplierParty/cac:Party/cac:PartyName/cbc:Name')[0];
+	}else{
+		$codTipoComprobante = $docXML->xpath('//cbc:InvoiceTypeCode')[0];
+		$Emisor = $docXML->xpath('//cbc:RegistrationName')[1];
+		$Ruc = $docXML->xpath('//cac:AccountingCustomerParty/cac:Party/cac:PartyIdentification/cbc:ID')[0];
+		if($codTipoComprobante=="01"){
+			$tipo_comprobante = "FACTURA ELECTRONICA";
+		}
+		else if($codTipoComprobante=="03"){
+			$tipo_comprobante = "BOLETA DE VENTA ELECTRONICA";
+		}
+		
+	}
+
+
 	echo "<div style='text-align:center;'>";
-	echo "<h1>DATOS FACTURA</h1>";
+	echo "<h1>DATOS COMPROBANTE</h1>";
 	echo "</div>";
 	echo "<table class='table table-striped table-dark' >";
+	echo "<tr><td>Tipo de Comprobante</td><td>".$tipo_comprobante."</td></tr>";
 	echo "<tr><td>ID </td><td>".$ID."</td></tr>";
 	echo "<tr><td>Fecha </td><td>".$Fecha."</td></tr>";
 	echo "<tr><td>RUC </td><td>".$Ruc."</td></tr>";
-	echo "<tr><td>Cliente </td><td>".$Cliente."</td></tr>";
+	echo "<tr><td>Emisor </td><td>".$Emisor."</td></tr>";
 	echo "<tr><td>Pedido </td><td>".$pedido."</td></tr>";
 	echo "<tr><td>Fecha Facturacion </td><td>".$fechaFacturacion."</td></tr>";
 	echo "<tr><td>Referencia </td><td>".$referencia."</td></tr>";
